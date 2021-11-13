@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { BusService } from '../services/bus.service';
 
-@Controller('zaragoza')
+@Controller('bus')
 export class BusController {
   constructor(private readonly busService: BusService) {}
 
