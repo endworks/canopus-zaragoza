@@ -8,12 +8,3 @@ export interface BusStationResponse {
   sourceUrl?: string;
   lastUpdated?: string;
 }
-
-export interface ErrorResponse {
-  errors: ErrorMessage;
-}
-
-export interface ErrorMessage {
-  status: number;
-  message?: string;
-}

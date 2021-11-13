@@ -1,13 +1,13 @@
 {
   "name": "canopus-zaragoza",
-  "version": "0.1.0",
-  "description": "Microservice for Zaragoza services",
+  "version": "0.1.1",
+  "description": "Microservice for Zaragoza no one wants",
   "author": {
     "name": "ender-null",
     "email": "endernull@icloud.com",
     "url": "https://github.com/ender-null"
   },
-  "homepage": "https://github.com/drkcat/canopus-zaragoza#readme",
+  "homepage": "https://github.com/drkcat/canopus-zaragoza",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/drkcat/canopus-zaragoza.git"
@@ -37,11 +37,9 @@
     "@nestjs/core": "^8.0.0",
     "@nestjs/microservices": "^8.2.0",
     "@nestjs/platform-express": "^8.0.0",
-    "@nestjs/swagger": "^5.1.4",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0",
-    "swagger-ui-express": "^4.1.6"
+    "rxjs": "^7.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
