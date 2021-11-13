@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/drkcat/canopus-zaragoza/issues"
   },
-  "license": "AGPL-3.0",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
