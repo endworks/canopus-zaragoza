@@ -150,7 +150,7 @@ export class BusService {
     return {
       statusCode: 501,
       error: 'Not Implemented',
-      message: `#TODO`,
+      message: `#TODO get by ${id}`,
     };
   }
 }

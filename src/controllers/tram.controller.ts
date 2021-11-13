@@ -7,12 +7,12 @@ export class TramController {
   constructor(private readonly tramService: TramService) {}
 
   @MessagePattern('tram/stations')
-  async stations() {
+  async tramStations() {
     return this.tramService.getStations();
   }
 
   @MessagePattern('tram/station')
-  async station(data: { id: string }) {
+  async tramStation(data: { id: string }) {
     return this.tramService.getStation(data.id);
   }
 }
