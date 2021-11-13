@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ErrorResponse } from '../models/error.interface';
+import { ErrorResponse } from '../models/common.interface';
 
 @Injectable()
 export class TramService {

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { capitalize, capitalizeEachWord } from '../utils';
 import { BusStationResponse } from '../models/bus.interface';
-import { ErrorResponse } from '../models/error.interface';
+import { ErrorResponse } from '../models/common.interface';
 
 const busApiURL =
   'https://www.zaragoza.es/sede/servicio/urbanismo-infraestructuras/transporte-urbano/poste-autobus/tuzsa-';

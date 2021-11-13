@@ -1,3 +1,12 @@
+export interface BusStationPayload {
+  id: string;
+  source: string;
+}
+
+export interface BusLinePayload {
+  id: string;
+}
+
 export interface BusStationResponse {
   id: string;
   street: string;

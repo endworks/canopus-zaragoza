@@ -1,18 +1,19 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, Payload, Transport } from '@nestjs/microservices';
+import { TramStationPayload } from 'src/models/tram.interface';
 import { TramService } from '../services/tram.service';
 
-@Controller('tram')
+@Controller()
 export class TramController {
   constructor(private readonly tramService: TramService) {}
 
-  @MessagePattern('tram/stations')
+  @MessagePattern('tram/stations', Transport.TCP)
   async tramStations() {
     return this.tramService.getStations();
   }
 
-  @MessagePattern('tram/station')
-  async tramStation(data: { id: string }) {
+  @MessagePattern('tram/station', Transport.TCP)
+  async tramStation(@Payload() data: TramStationPayload) {
     return this.tramService.getStation(data.id);
   }
 }
