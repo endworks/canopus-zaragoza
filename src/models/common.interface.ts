@@ -3,3 +3,9 @@ export interface ErrorResponse {
   message: string;
   error: string;
 }
+
+export interface StationTime {
+  destination: string;
+  line: string;
+  time: string;
+}

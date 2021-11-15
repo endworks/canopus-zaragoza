@@ -1,26 +1,41 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { capitalize, capitalizeEachWord } from '../utils';
-import { BusStationResponse } from '../models/bus.interface';
+import {
+  BusStationResponse,
+  BusLineResponse,
+  BusLinesResponse,
+  BusStationsResponse,
+} from '../models/bus.interface';
+import * as cheerio from 'cheerio';
 import { ErrorResponse } from '../models/common.interface';
 
 const busApiURL =
   'https://www.zaragoza.es/sede/servicio/urbanismo-infraestructuras/transporte-urbano/poste-autobus/tuzsa-';
 const busWebURL =
-  'https://zaragoza.avanzagrupo.com/wp-admin/admin-ajax.php?action=tiempos_de_llegada&selectPoste=';
+  'https://zaragoza-pasobus.avanzagrupo.com/frm_esquemaparadatime.php?poste=';
 
 @Injectable()
 export class BusService {
+  private readonly logger = new Logger('BusService');
+
   constructor(private httpService: HttpService) {}
 
   // Stations
-  public getStations(): ErrorResponse {
-    return {
-      statusCode: 501,
-      error: 'Not Implemented',
-      message: `#TODO`,
-    };
+  public async getStations(): Promise<BusStationsResponse | ErrorResponse> {
+    try {
+      const url = 'https://zgzpls.firebaseio.com/bus/stations.json';
+      const response = await lastValueFrom(this.httpService.get(url));
+      return response.data;
+    } catch (exception) {
+      this.logger.error(exception.message);
+      return {
+        statusCode: 500,
+        error: 'Internal Server Error',
+        message: exception.message,
+      };
+    }
   }
 
   // Station
@@ -43,7 +58,26 @@ export class BusService {
           times: [],
           coordinates: [],
           source: null,
+          type: 'bus',
         };
+
+        let backup;
+        try {
+          const backupUrl = `https://zgzpls.firebaseio.com/bus/stations/tuzsa-${id}.json`;
+          const backupResponse = await lastValueFrom(
+            this.httpService.get(backupUrl),
+          );
+          backup = backupResponse.data;
+        } catch {
+          backup = null;
+        }
+
+        if (backup) {
+          resp.street = backup.street;
+          resp.lines = backup.lines;
+          resp.coordinates = backup.coordinates;
+        }
+
         if (!parseWeb) {
           resp.source = 'official-api';
           resp.sourceUrl = url;
@@ -96,6 +130,8 @@ export class BusService {
           resp.times = [...times];
         } else {
           resp.source = 'web';
+          resp.sourceUrl = url;
+          this.logger.error('Not Implemented');
           return {
             statusCode: 501,
             error: 'Not Implemented',
@@ -105,7 +141,7 @@ export class BusService {
         resp.times.sort((a, b) => {
           if (a.time.includes('min') && b.time.includes('min')) {
             const sort =
-              parseInt(a.time.split()[0]) < parseInt(b.time.split()[0])
+              parseInt(a.time.split(' ')[0]) < parseInt(b.time.split(' ')[0])
                 ? -1
                 : 1;
             return sort;
@@ -119,8 +155,17 @@ export class BusService {
           }
           return -1;
         });
+
+        const updateUrl = `https://zgzpls.firebaseio.com/bus/stations/tuzsa-${id}.json`;
+        try {
+          await lastValueFrom(this.httpService.put(updateUrl, resp));
+        } catch (updateException) {
+          this.logger.error(updateException.message);
+        }
+
         return resp;
       } catch (exception) {
+        this.logger.error(exception.message);
         return {
           statusCode: 500,
           error: 'Internal Server Error',
@@ -128,29 +173,52 @@ export class BusService {
         };
       }
     } catch (exception) {
+      this.logger.error(`Resource with ID '${id}' was not found`);
       return {
         statusCode: 404,
         error: 'Not Found',
-        message: `Cannot find ${id}`,
+        message: `Resource with ID '${id}' was not found`,
       };
     }
   }
 
   // Lines
-  public getLines(): ErrorResponse {
-    return {
-      statusCode: 501,
-      error: 'Not Implemented',
-      message: `#TODO`,
-    };
+  public async getLines(): Promise<BusLinesResponse | ErrorResponse> {
+    try {
+      const url = 'https://zgzpls.firebaseio.com/bus/lines.json';
+      const response = await lastValueFrom(this.httpService.get(url));
+      return response.data;
+    } catch (exception) {
+      this.logger.error(exception.message);
+      return {
+        statusCode: 500,
+        error: 'Internal Server Error',
+        message: exception.message,
+      };
+    }
   }
 
   // Line
-  public getLine(id: string): ErrorResponse {
-    return {
-      statusCode: 501,
-      error: 'Not Implemented',
-      message: `#TODO get by ${id}`,
-    };
+  public async getLine(id: string): Promise<BusLineResponse | ErrorResponse> {
+    try {
+      const url = `https://zgzpls.firebaseio.com/bus/lines/tuzsa-${id}.json`;
+      const response = await lastValueFrom(this.httpService.get(url));
+      if (!response.data) {
+        this.logger.error(`Resource with ID '${id}' was not found`);
+        return {
+          statusCode: 404,
+          error: 'Not Found',
+          message: `Resource with ID '${id}' was not found`,
+        };
+      }
+      return response.data;
+    } catch (exception) {
+      this.logger.error(exception.message);
+      return {
+        statusCode: 500,
+        error: 'Internal Server Error',
+        message: exception.message,
+      };
+    }
   }
 }
