@@ -43,10 +43,22 @@ export class BusService {
     id: string,
     source: string,
   ): Promise<BusStationResponse | ErrorResponse> {
-    const parseWeb = source && source === 'web';
-    const url = parseWeb
-      ? busWebURL + id
-      : `${busApiURL + id}.json?srsname=wgs84`;
+    const url =
+      source && source === 'web'
+        ? busWebURL + id
+        : `${busApiURL + id}.json?srsname=wgs84`;
+
+    let backup;
+    try {
+      const backupUrl = `https://zgzpls.firebaseio.com/bus/stations/tuzsa-${id}.json`;
+      const backupResponse = await lastValueFrom(
+        this.httpService.get(backupUrl),
+      );
+      backup = backupResponse.data;
+    } catch {
+      backup = null;
+    }
+
     try {
       const response = await lastValueFrom(this.httpService.get(url));
 
@@ -61,25 +73,15 @@ export class BusService {
           type: 'bus',
         };
 
-        let backup;
-        try {
-          const backupUrl = `https://zgzpls.firebaseio.com/bus/stations/tuzsa-${id}.json`;
-          const backupResponse = await lastValueFrom(
-            this.httpService.get(backupUrl),
-          );
-          backup = backupResponse.data;
-        } catch {
-          backup = null;
-        }
-
         if (backup) {
           resp.street = backup.street;
           resp.lines = backup.lines;
           resp.coordinates = backup.coordinates;
+          resp.times = backup.times;
         }
 
-        if (!parseWeb) {
-          resp.source = 'official-api';
+        if (!source || source === 'api') {
+          resp.source = 'api';
           resp.sourceUrl = url;
           resp.lastUpdated = response.data.lastUpdated;
           resp.street = capitalizeEachWord(
@@ -128,7 +130,7 @@ export class BusService {
             });
           });
           resp.times = [...times];
-        } else {
+        } else if (source === 'web') {
           resp.source = 'web';
           resp.sourceUrl = url;
           this.logger.error('Not Implemented');
@@ -136,6 +138,14 @@ export class BusService {
             statusCode: 501,
             error: 'Not Implemented',
             message: `#TODO`,
+          };
+        } else if (source === 'backup') {
+          return { ...backup, source: 'backup' };
+        } else {
+          return {
+            statusCode: 404,
+            error: 'Not Found',
+            message: `Invalid source, value must be: 'api', 'web' or 'backup'`,
           };
         }
         resp.times.sort((a, b) => {
@@ -174,11 +184,15 @@ export class BusService {
       }
     } catch (exception) {
       this.logger.error(`Resource with ID '${id}' was not found`);
-      return {
-        statusCode: 404,
-        error: 'Not Found',
-        message: `Resource with ID '${id}' was not found`,
-      };
+      if (backup) {
+        return { ...backup, source: 'backup' };
+      } else {
+        return {
+          statusCode: 404,
+          error: 'Not Found',
+          message: `Resource with ID '${id}' was not found`,
+        };
+      }
     }
   }
 
