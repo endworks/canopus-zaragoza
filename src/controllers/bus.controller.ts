@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload, Transport } from '@nestjs/microservices';
-import { BusLinePayload, BusStationPayload } from 'src/models/bus.interface';
+import { BusStationPayload } from 'src/models/bus.interface';
+import { IdPayload } from 'src/models/common.interface';
 import { BusService } from '../services/bus.service';
 
 @Controller()
@@ -23,7 +24,7 @@ export class BusController {
   }
 
   @MessagePattern('bus/line', Transport.TCP)
-  async busLine(@Payload() data: BusLinePayload) {
+  async busLine(@Payload() data: IdPayload) {
     return this.busService.getLine(data.id);
   }
 }

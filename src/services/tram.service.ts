@@ -24,7 +24,7 @@ export class TramService {
   }
 
   // Station
-  public getStation(id: string): ErrorResponse {
+  public async getStation(id: string): Promise<ErrorResponse> {
     return {
       statusCode: 501,
       error: 'Not Implemented',

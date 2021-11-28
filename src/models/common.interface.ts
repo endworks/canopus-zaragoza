@@ -9,3 +9,7 @@ export interface StationTime {
   line: string;
   time: string;
 }
+
+export interface IdPayload {
+  id: string;
+}
