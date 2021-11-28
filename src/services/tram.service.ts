@@ -18,7 +18,7 @@ export class TramService {
       return {
         statusCode: 500,
         error: 'Internal Server Error',
-        message: exception.message,
+        message: exception.message
       };
     }
   }
@@ -28,7 +28,7 @@ export class TramService {
     return {
       statusCode: 501,
       error: 'Not Implemented',
-      message: `#TODO get by ${id}`,
+      message: `#TODO get by ${id}`
     };
   }
 }

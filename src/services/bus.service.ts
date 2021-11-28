@@ -6,7 +6,7 @@ import {
   BusStationResponse,
   BusLineResponse,
   BusLinesResponse,
-  BusStationsResponse,
+  BusStationsResponse
 } from '../models/bus.interface';
 import { ErrorResponse } from '../models/common.interface';
 
@@ -32,7 +32,7 @@ export class BusService {
       return {
         statusCode: 500,
         error: 'Internal Server Error',
-        message: exception.message,
+        message: exception.message
       };
     }
   }
@@ -40,7 +40,7 @@ export class BusService {
   // Station
   public async getStation(
     id: string,
-    source: string,
+    source: string
   ): Promise<BusStationResponse | ErrorResponse> {
     const url =
       source && source === 'web'
@@ -51,7 +51,7 @@ export class BusService {
     try {
       const backupUrl = `https://zgzpls.firebaseio.com/bus/stations/tuzsa-${id}.json`;
       const backupResponse = await lastValueFrom(
-        this.httpService.get(backupUrl),
+        this.httpService.get(backupUrl)
       );
       backup = backupResponse.data;
     } catch {
@@ -69,7 +69,7 @@ export class BusService {
           times: [],
           coordinates: [],
           source: null,
-          type: 'bus',
+          type: 'bus'
         };
 
         if (backup) {
@@ -84,7 +84,7 @@ export class BusService {
           resp.sourceUrl = url;
           resp.lastUpdated = response.data.lastUpdated;
           resp.street = capitalizeEachWord(
-            response.data.title.split(')')[1].slice(1).split('Lí')[0].trim(),
+            response.data.title.split(')')[1].slice(1).split('Lí')[0].trim()
           );
           resp.lines = response.data.title
             .split(resp.street)[1]
@@ -101,15 +101,15 @@ export class BusService {
                   destination.destino
                     .replace(/(^,)|(,$)/g, '')
                     .replace(/(^\.)|(\.$)/g, ''),
-                  true,
-                ),
+                  true
+                )
               };
               if (destination[element].includes('minutos')) {
                 times.push({
                   ...transport,
                   time: `${destination[element]
                     .replace(' minutos', '')
-                    .replace(/(^\.)|(\.$)/g, '')} min.`,
+                    .replace(/(^\.)|(\.$)/g, '')} min.`
                 });
               } else if (destination[element]?.includes('Sin estimacin')) {
                 times.push({
@@ -117,13 +117,13 @@ export class BusService {
                   time: capitalize(
                     destination[element]
                       .replace(/(^\.)|(\.$)/g, '')
-                      .replace('cin', 'ción'),
-                  ),
+                      .replace('cin', 'ción')
+                  )
                 });
               } else {
                 times.push({
                   ...transport,
-                  time: capitalize(destination[element]),
+                  time: capitalize(destination[element])
                 });
               }
             });
@@ -136,7 +136,7 @@ export class BusService {
           return {
             statusCode: 501,
             error: 'Not Implemented',
-            message: `#TODO`,
+            message: `#TODO`
           };
         } else if (source === 'backup') {
           return { ...backup, source: 'backup' };
@@ -144,7 +144,7 @@ export class BusService {
           return {
             statusCode: 404,
             error: 'Not Found',
-            message: `Invalid source, value must be: 'api', 'web' or 'backup'`,
+            message: `Invalid source, value must be: 'api', 'web' or 'backup'`
           };
         }
         resp.times.sort((a, b) => {
@@ -178,7 +178,7 @@ export class BusService {
         return {
           statusCode: 500,
           error: 'Internal Server Error',
-          message: exception.message,
+          message: exception.message
         };
       }
     } catch (exception) {
@@ -189,7 +189,7 @@ export class BusService {
         return {
           statusCode: 404,
           error: 'Not Found',
-          message: `Resource with ID '${id}' was not found`,
+          message: `Resource with ID '${id}' was not found`
         };
       }
     }
@@ -206,7 +206,7 @@ export class BusService {
       return {
         statusCode: 500,
         error: 'Internal Server Error',
-        message: exception.message,
+        message: exception.message
       };
     }
   }
@@ -221,7 +221,7 @@ export class BusService {
         return {
           statusCode: 404,
           error: 'Not Found',
-          message: `Resource with ID '${id}' was not found`,
+          message: `Resource with ID '${id}' was not found`
         };
       }
       return response.data;
@@ -230,7 +230,7 @@ export class BusService {
       return {
         statusCode: 500,
         error: 'Internal Server Error',
-        message: exception.message,
+        message: exception.message
       };
     }
   }

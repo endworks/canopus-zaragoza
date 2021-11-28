@@ -10,6 +10,6 @@ import { TramService } from './services/tram.service';
 @Module({
   imports: [HttpModule],
   controllers: [BusController, TramController, CinemaController],
-  providers: [BusService, TramService, CinemaService],
+  providers: [BusService, TramService, CinemaService]
 })
 export class AppModule {}

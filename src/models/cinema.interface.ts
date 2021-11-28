@@ -2,16 +2,21 @@ export interface Cinema {
   name: string;
   address?: string;
   location?: string;
-  url?: string;
+  source?: string;
 }
 
-export interface CinemaSession {
+export interface Movie {
+  id: string;
   name: string;
-  duration: number;
-  directors?: string[];
+  sessions: string[];
+  synopsis?: string;
+  duration?: number;
+  director?: string;
   genres?: string[];
   actors?: string[];
-  times?: string[];
+  poster?: string;
+  trailer?: string;
+  source?: string;
 }
 
 export interface CinemaData {
@@ -26,6 +31,6 @@ export interface CinemasResponse {
   [id: string]: CinemaResponse;
 }
 
-export interface CinemaSessionsResponse extends CinemaResponse {
-  sessions: CinemaSession[];
+export interface CinemaMoviesResponse extends CinemaResponse {
+  movies: Movie[];
 }
