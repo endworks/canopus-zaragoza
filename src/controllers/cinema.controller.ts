@@ -4,7 +4,7 @@ import { IdPayload } from 'src/models/common.interface';
 import { CinemaService } from 'src/services/cinema.service';
 
 @Controller()
-export class BusController {
+export class CinemaController {
   constructor(private readonly cinemaService: CinemaService) {}
 
   @MessagePattern('cinemas', Transport.TCP)
