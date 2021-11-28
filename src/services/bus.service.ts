@@ -8,7 +8,6 @@ import {
   BusLinesResponse,
   BusStationsResponse,
 } from '../models/bus.interface';
-import * as cheerio from 'cheerio';
 import { ErrorResponse } from '../models/common.interface';
 
 const busApiURL =
