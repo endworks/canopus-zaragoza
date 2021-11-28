@@ -42,7 +42,7 @@ export class CinemaService {
   }
 
   // Cinema sessions
-  public async getCinemaSessions(
+  public async getSessions(
     id: string,
   ): Promise<CinemaSessionsResponse | ErrorResponse> {
     return {

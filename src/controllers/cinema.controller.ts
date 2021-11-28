@@ -16,4 +16,9 @@ export class CinemaController {
   async cinema(@Payload() data: IdPayload) {
     return this.cinemaService.getCinema(data.id);
   }
+
+  @MessagePattern('cinema/sessions', Transport.TCP)
+  async sessions(@Payload() data: IdPayload) {
+    return this.cinemaService.getSessions(data.id);
+  }
 }
