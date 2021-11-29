@@ -80,7 +80,7 @@ export class BusService {
         }
 
         if (!source || source === 'api') {
-          resp.source = 'api';
+          resp.source = source;
           resp.sourceUrl = url;
           resp.lastUpdated = response.data.lastUpdated;
           resp.street = capitalizeEachWord(
@@ -130,7 +130,7 @@ export class BusService {
           });
           resp.times = [...times];
         } else if (source === 'web') {
-          resp.source = 'web';
+          resp.source = source;
           resp.sourceUrl = url;
           this.logger.error('Not Implemented');
           return {
@@ -139,7 +139,7 @@ export class BusService {
             message: `#TODO`
           };
         } else if (source === 'backup') {
-          return { ...backup, source: 'backup' };
+          return { ...backup, source, sourceUrl: null };
         } else {
           return {
             statusCode: 404,
@@ -184,7 +184,7 @@ export class BusService {
     } catch (exception) {
       this.logger.error(`Resource with ID '${id}' was not found`);
       if (backup) {
-        return { ...backup, source: 'backup' };
+        return { ...backup, source: 'backup', sourceUrl: null };
       } else {
         return {
           statusCode: 404,
