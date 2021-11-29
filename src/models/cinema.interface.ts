@@ -2,6 +2,7 @@ export interface Cinema {
   name: string;
   address?: string;
   location?: string;
+  website?: string;
   source?: string;
 }
 
