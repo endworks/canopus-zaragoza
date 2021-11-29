@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import {
+  Cinema,
   CinemaMoviesResponse,
   CinemaResponse,
   CinemasResponse,
@@ -20,9 +21,8 @@ export class CinemaService {
 
   // Cinemas
   public async getCinemas(): Promise<CinemasResponse | ErrorResponse> {
-    const resp: CinemasResponse = {};
-    Object.keys(cinemas).map(async (id) => {
-      resp[id] = {
+    const resp: CinemasResponse = Object.keys(cinemas).map((id) => {
+      return {
         id,
         ...cinemas[id]
       };

@@ -35,9 +35,7 @@ export interface CinemaResponse extends Cinema {
   id: string;
 }
 
-export interface CinemasResponse {
-  [id: string]: CinemaResponse;
-}
+export interface CinemasResponse extends Array<CinemaResponse> {}
 
 export interface CinemaMoviesResponse extends CinemaResponse {
   movies: Movie[];

@@ -15,7 +15,6 @@ export interface TramStationResponse {
   sourceUrl?: string;
   lastUpdated?: string;
   type?: string;
-
   transports: StationTime[];
 }
 
