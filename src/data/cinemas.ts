@@ -23,12 +23,12 @@ export const cinemas: CinemaData = {
     name: 'Cinesa Grancasa',
     address: 'Calle de María Zambrano, 35, 50018 Zaragoza',
     location: 'Zaragoza',
-    source: 'https://www.cinesa.es/cines/grancasa'
+    source: 'https://www.cinesa.es/Cines/Horarios/611/50011'
   },
   venecia: {
     name: 'Cinesa Puerto Venecia 3D',
     address: 'Tr.ª Jardines Reales, 7, 50021 Zaragoza',
     location: 'Zaragoza',
-    source: 'https://www.cinesa.es/cines/puerto-venecia'
+    source: 'https://www.cinesa.es/Cines/Horarios/1100/50011'
   }
 };

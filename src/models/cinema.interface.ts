@@ -8,7 +8,7 @@ export interface Cinema {
 export interface Movie {
   id: string;
   name: string;
-  sessions: string[];
+  sessions: Session[];
   synopsis?: string;
   duration?: number;
   director?: string;
@@ -17,6 +17,13 @@ export interface Movie {
   poster?: string;
   trailer?: string;
   source?: string;
+}
+
+export interface Session {
+  time: string;
+  room: string;
+  type?: string;
+  url?: string;
 }
 
 export interface CinemaData {
