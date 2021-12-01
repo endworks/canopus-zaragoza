@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { TramStationsResponse } from 'src/models/tram.interface';
 import { ErrorResponse } from '../models/common.interface';
@@ -15,20 +15,24 @@ export class TramService {
       const response = await lastValueFrom(this.httpService.get(url));
       return response.data;
     } catch (exception) {
-      return {
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: exception.message
-      };
+      throw new InternalServerErrorException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: exception.message,
+        },
+        exception.message,
+      );
     }
   }
 
   // Station
   public async getStation(id: string): Promise<ErrorResponse> {
-    return {
-      statusCode: 501,
-      error: 'Not Implemented',
-      message: `#TODO get by ${id}`
-    };
+    throw new NotImplementedException(
+      {
+        statusCode: HttpStatus.NOT_IMPLEMENTED,
+        message: `#TODO get station by ID: '${id}'`
+      },
+      `#TODO`,
+    );
   }
 }

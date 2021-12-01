@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, InternalServerErrorException, NotFoundException, NotImplementedException } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { capitalize, capitalizeEachWord } from '../utils';
 import {
@@ -17,8 +17,6 @@ const busWebURL =
 
 @Injectable()
 export class BusService {
-  private readonly logger = new Logger('BusService');
-
   constructor(private httpService: HttpService) {}
 
   // Stations
@@ -28,12 +26,13 @@ export class BusService {
       const response = await lastValueFrom(this.httpService.get(url));
       return response.data;
     } catch (exception) {
-      this.logger.error(exception.message);
-      return {
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: exception.message
-      };
+      throw new InternalServerErrorException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: exception.message,
+        },
+        exception.message,
+      );
     }
   }
 
@@ -132,20 +131,23 @@ export class BusService {
         } else if (source === 'web') {
           resp.source = source;
           resp.sourceUrl = url;
-          this.logger.error('Not Implemented');
-          return {
-            statusCode: 501,
-            error: 'Not Implemented',
-            message: `#TODO`
-          };
+          throw new NotImplementedException(
+            {
+              statusCode: HttpStatus.NOT_IMPLEMENTED,
+              message: `#TODO`
+            },
+            `#TODO`,
+          );
         } else if (source === 'backup') {
           return { ...backup, source, sourceUrl: null };
         } else {
-          return {
-            statusCode: 404,
-            error: 'Not Found',
-            message: `Invalid source, value must be: 'api', 'web' or 'backup'`
-          };
+          throw new NotFoundException(
+            {
+              statusCode: HttpStatus.NOT_FOUND,
+              message: `Resource with ID '${id}' was not found`,
+            },
+            `Resource with ID '${id}' was not found`,
+          );
         }
         resp.times.sort((a, b) => {
           if (a.time.includes('min') && b.time.includes('min')) {
@@ -166,31 +168,29 @@ export class BusService {
         });
 
         const updateUrl = `https://zgzpls.firebaseio.com/bus/stations/tuzsa-${id}.json`;
-        try {
-          await lastValueFrom(this.httpService.put(updateUrl, resp));
-        } catch (updateException) {
-          this.logger.error(updateException.message);
-        }
+        await this.httpService.put(updateUrl, resp);
 
         return resp;
       } catch (exception) {
-        this.logger.error(exception.message);
-        return {
-          statusCode: 500,
-          error: 'Internal Server Error',
-          message: exception.message
-        };
+        throw new InternalServerErrorException(
+          {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: exception.message,
+          },
+          exception.message,
+        );
       }
     } catch (exception) {
-      this.logger.error(`Resource with ID '${id}' was not found`);
       if (backup) {
         return { ...backup, source: 'backup', sourceUrl: null };
       } else {
-        return {
-          statusCode: 404,
-          error: 'Not Found',
-          message: `Resource with ID '${id}' was not found`
-        };
+        throw new NotFoundException(
+          {
+            statusCode: HttpStatus.NOT_FOUND,
+            message: `Resource with ID '${id}' was not found`,
+          },
+          `Resource with ID '${id}' was not found`,
+        );
       }
     }
   }
@@ -202,12 +202,13 @@ export class BusService {
       const response = await lastValueFrom(this.httpService.get(url));
       return response.data;
     } catch (exception) {
-      this.logger.error(exception.message);
-      return {
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: exception.message
-      };
+      throw new InternalServerErrorException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: exception.message,
+        },
+        exception.message,
+      );
     }
   }
 
@@ -217,21 +218,23 @@ export class BusService {
       const url = `https://zgzpls.firebaseio.com/bus/lines/tuzsa-${id}.json`;
       const response = await lastValueFrom(this.httpService.get(url));
       if (!response.data) {
-        this.logger.error(`Resource with ID '${id}' was not found`);
-        return {
-          statusCode: 404,
-          error: 'Not Found',
-          message: `Resource with ID '${id}' was not found`
-        };
+        throw new NotFoundException(
+          {
+            statusCode: HttpStatus.NOT_FOUND,
+            message: `Resource with ID '${id}' was not found`,
+          },
+          `Resource with ID '${id}' was not found`,
+        );
       }
       return response.data;
     } catch (exception) {
-      this.logger.error(exception.message);
-      return {
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: exception.message
-      };
+      throw new InternalServerErrorException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: exception.message,
+        },
+        exception.message,
+      );
     }
   }
 }
