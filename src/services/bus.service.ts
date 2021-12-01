@@ -75,7 +75,6 @@ export class BusService {
           resp.street = backup.street;
           resp.lines = backup.lines;
           resp.coordinates = backup.coordinates;
-          resp.times = backup.times;
         }
 
         if (!source || source === 'api') {
@@ -181,15 +180,21 @@ export class BusService {
         );
       }
     } catch (exception) {
-      if (backup) {
-        return { ...backup, source: 'backup', sourceUrl: null };
-      } else {
+      if (exception.response.status === HttpStatus.NOT_FOUND) {
         throw new NotFoundException(
           {
             statusCode: HttpStatus.NOT_FOUND,
             message: `Resource with ID '${id}' was not found`,
           },
           `Resource with ID '${id}' was not found`,
+        );
+      } else {
+        throw new InternalServerErrorException(
+          {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: exception.response.data.mensaje || exception.message,
+          },
+          exception.response.data.mensaje || exception.message,
         );
       }
     }
