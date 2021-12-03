@@ -7,7 +7,7 @@ import { BusService } from '../services/bus.service';
 @Controller()
 export class BusController {
   private readonly logger = new Logger('BusController');
-  
+
   constructor(private readonly busService: BusService) {}
 
   @MessagePattern('bus/stations', Transport.TCP)

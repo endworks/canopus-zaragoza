@@ -1,5 +1,13 @@
 import { HttpService } from '@nestjs/axios';
-import { HttpStatus, Injectable, InternalServerErrorException, NotFoundException, NotImplementedException } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  HttpStatus,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  NotImplementedException
+} from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { capitalize, capitalizeEachWord } from '../utils';
 import {
@@ -9,6 +17,7 @@ import {
   BusStationsResponse
 } from '../models/bus.interface';
 import { ErrorResponse } from '../models/common.interface';
+import { Cache } from 'cache-manager';
 
 const busApiURL =
   'https://www.zaragoza.es/sede/servicio/urbanismo-infraestructuras/transporte-urbano/poste-autobus/tuzsa-';
@@ -17,21 +26,29 @@ const busWebURL =
 
 @Injectable()
 export class BusService {
-  constructor(private httpService: HttpService) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private httpService: HttpService
+  ) {}
 
   // Stations
   public async getStations(): Promise<BusStationsResponse | ErrorResponse> {
     try {
+      const cache: BusStationsResponse = await this.cacheManager.get(
+        'bus/stations'
+      );
+      if (cache) return cache;
       const url = 'https://zgzpls.firebaseio.com/bus/stations.json';
       const response = await lastValueFrom(this.httpService.get(url));
+      await this.cacheManager.set(`bus/stations`, response.data);
       return response.data;
     } catch (exception) {
       throw new InternalServerErrorException(
         {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: exception.message,
+          message: exception.message
         },
-        exception.message,
+        exception.message
       );
     }
   }
@@ -41,6 +58,10 @@ export class BusService {
     id: string,
     source: string
   ): Promise<BusStationResponse | ErrorResponse> {
+    const cache: BusStationResponse = await this.cacheManager.get(
+      `bus/stations/${id}/${source}`
+    );
+    if (cache) return cache;
     const url =
       source && source === 'web'
         ? busWebURL + id
@@ -135,7 +156,7 @@ export class BusService {
               statusCode: HttpStatus.NOT_IMPLEMENTED,
               message: `#TODO`
             },
-            `#TODO`,
+            `#TODO`
           );
         } else if (source === 'backup') {
           return { ...backup, source, sourceUrl: null };
@@ -143,9 +164,9 @@ export class BusService {
           throw new NotFoundException(
             {
               statusCode: HttpStatus.NOT_FOUND,
-              message: `Resource with ID '${id}' was not found`,
+              message: `Resource with ID '${id}' was not found`
             },
-            `Resource with ID '${id}' was not found`,
+            `Resource with ID '${id}' was not found`
           );
         }
         resp.times.sort((a, b) => {
@@ -168,15 +189,16 @@ export class BusService {
 
         const updateUrl = `https://zgzpls.firebaseio.com/bus/stations/tuzsa-${id}.json`;
         await this.httpService.put(updateUrl, resp);
+        await this.cacheManager.set(`bus/stations/${id}/${source}`, resp);
 
         return resp;
       } catch (exception) {
         throw new InternalServerErrorException(
           {
             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: exception.message,
+            message: exception.message
           },
-          exception.message,
+          exception.message
         );
       }
     } catch (exception) {
@@ -184,17 +206,17 @@ export class BusService {
         throw new NotFoundException(
           {
             statusCode: HttpStatus.NOT_FOUND,
-            message: `Resource with ID '${id}' was not found`,
+            message: `Resource with ID '${id}' was not found`
           },
-          `Resource with ID '${id}' was not found`,
+          `Resource with ID '${id}' was not found`
         );
       } else {
         throw new InternalServerErrorException(
           {
             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: exception.response.data.mensaje || exception.message,
+            message: exception.response.data.mensaje || exception.message
           },
-          exception.response.data.mensaje || exception.message,
+          exception.response.data.mensaje || exception.message
         );
       }
     }
@@ -203,16 +225,19 @@ export class BusService {
   // Lines
   public async getLines(): Promise<BusLinesResponse | ErrorResponse> {
     try {
+      const cache: BusLinesResponse = await this.cacheManager.get(`bus/lines`);
+      if (cache) return cache;
       const url = 'https://zgzpls.firebaseio.com/bus/lines.json';
       const response = await lastValueFrom(this.httpService.get(url));
+      await this.cacheManager.set(`bus/lines`, response.data);
       return response.data;
     } catch (exception) {
       throw new InternalServerErrorException(
         {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: exception.message,
+          message: exception.message
         },
-        exception.message,
+        exception.message
       );
     }
   }
@@ -220,25 +245,30 @@ export class BusService {
   // Line
   public async getLine(id: string): Promise<BusLineResponse | ErrorResponse> {
     try {
+      const cache: BusLineResponse = await this.cacheManager.get(
+        `bus/lines/${id}`
+      );
+      if (cache) return cache;
       const url = `https://zgzpls.firebaseio.com/bus/lines/tuzsa-${id}.json`;
       const response = await lastValueFrom(this.httpService.get(url));
       if (!response.data) {
         throw new NotFoundException(
           {
             statusCode: HttpStatus.NOT_FOUND,
-            message: `Resource with ID '${id}' was not found`,
+            message: `Resource with ID '${id}' was not found`
           },
-          `Resource with ID '${id}' was not found`,
+          `Resource with ID '${id}' was not found`
         );
       }
+      await this.cacheManager.set(`bus/lines/${id}`, response.data);
       return response.data;
     } catch (exception) {
       throw new InternalServerErrorException(
         {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: exception.message,
+          message: exception.message
         },
-        exception.message,
+        exception.message
       );
     }
   }
