@@ -1,19 +1,19 @@
 {
   "name": "canopus-zaragoza",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Zaragoza microservice no one asked for",
   "author": {
     "name": "ender-null",
     "email": "endernull@icloud.com",
     "url": "https://github.com/ender-null"
   },
-  "homepage": "https://github.com/drkcat/canopus-zaragoza",
+  "homepage": "https://github.com/endworks/canopus-zaragoza",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/drkcat/canopus-zaragoza.git"
+    "url": "git+ssh://git@github.com/endworks/canopus-zaragoza.git"
   },
   "bugs": {
-    "url": "https://github.com/drkcat/canopus-zaragoza/issues"
+    "url": "https://github.com/endworks/canopus-zaragoza/issues"
   },
   "license": "MIT",
   "scripts": {
